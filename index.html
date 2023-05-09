@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>McClay Medicare Birthday Calculator</title>
+</head>
+<body>
+	<h1>McClay Medicare Birthday Calculator</h1>
+
+	<form>
+		<label for="birthdate">Enter your birthdate:</label>
+		<input type="date" id="birthdate" name="birthdate">
+		<input type="button" value="Calculate" onclick="calculateAge()">
+	</form>
+
+	<div id="result"></div>
+
+	<script>
+		function calculateAge() {
+			var birthdate = new Date(document.getElementById("birthdate").value);
+			var today = new Date();
+
+			if (isNaN(birthdate) || birthdate > today) {
+				alert("Please enter a valid date of birth.");
+				return;
+			}
+
+			var age = today.getFullYear() - birthdate.getFullYear();
+			var months = today.getMonth() - birthdate.getMonth();
+
+			if (months < 0 || (months === 0 && today.getDate() < birthdate.getDate())) {
+				age--;
+				months += 12;
+			}
+
+			var remainingMonths = (age >= 65) ? 0 : (65 - age - 1) * 12 + (12 - birthdate.getMonth() - 1) + today.getMonth() + 1;
+
+			if (today.getDate() < birthdate.getDate()) {
+				remainingMonths--;
+			}
+
+			var result = "<p>You are " + age + " years old.</p>";
+
+			if (remainingMonths > 0) {
+				result += "<p>You have " + remainingMonths + " months until you turn 65.</p>";
+
+				result += "<p>Important dates:</p>";
+
+				var date = new Date(birthdate);
+				date.setFullYear(date.getFullYear() + 65);
+
+				var monthsUntil = [12, 6, 5, 4, 3];
+
+				for (var i = 0; i < monthsUntil.length; i++) {
+					var months = monthsUntil[i];
+					var diffMonths = remainingMonths - months;
+
+					if (diffMonths >= 0) {
+						var importantDate = new Date(date);
+						importantDate.setMonth(date.getMonth() - months);
+						result += "<p>" + months + " months before turning 65: " + formatDate(importantDate, "MMM DD, YYYY") + "</p>";
+					}
+				}
+			}
+
+			document.getElementById("result").innerHTML = result;
+		}
+
+		function formatDate(date, format) {
+			var options = {
+				year: format.includes("YYYY") ? "numeric" : undefined,
+				month: format.includes("MMM") ? "short" : undefined,
+				day: format.includes("DD") ? "2-digit" : undefined
+			};
+			return date.toLocaleDateString(undefined, options).replace(/,/g, "");
+		}
+	</script>
+</body>
+</html>
